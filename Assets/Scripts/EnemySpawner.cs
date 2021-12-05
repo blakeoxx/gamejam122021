@@ -25,7 +25,7 @@ public class EnemySpawner : MonoBehaviour
         // Safety in case there are multiple spawners
         if (instance != this) return;
         
-        if (enemyList.Length < 1 || transform.childCount < 1)
+        if (enemyList.Length > 0 && transform.childCount > 0)
         {
             InvokeRepeating(nameof(Spawn), startDelay, spawnDelay);
         }
@@ -34,14 +34,17 @@ public class EnemySpawner : MonoBehaviour
     void Spawn()
     {
         if (currentEnemyCount >= maxEnemyCount) return;
-        
+
         // Pick a random enemy type to spawn
-        GameObject enemyToSpawn = enemyList[Random.Range(1, enemyList.Length)];
+        int enemyIdx = Random.Range(0, enemyList.Length);
+        GameObject enemyToSpawn = enemyList[enemyIdx];
         
         // Pick a random spawn position
-        Transform placeToSpawn = transform.GetChild(Random.Range(1, transform.childCount));
+        int spawnerIdx = Random.Range(0, transform.childCount);
+        Transform placeToSpawn = transform.GetChild(spawnerIdx);
 
         Instantiate(enemyToSpawn, placeToSpawn.position, placeToSpawn.rotation);
+        currentEnemyCount++;
     }
 
     public void OnEnemyLeaving()

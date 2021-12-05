@@ -422,10 +422,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31edd0b00f6ec6e4fa258649c69d9ddc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxEnemyCount: 0
-  startDelay: 0
-  spawnDelay: 0
-  enemyList: []
+  maxEnemyCount: 5
+  startDelay: 5
+  spawnDelay: 8
+  enemyList:
+  - {fileID: 2240515482256829715, guid: 4badab17d7b015f408f78a44cad36cc1, type: 3}
+  - {fileID: 1472538857939855736, guid: a5d72123f5f839a41bba97df927fbd1b, type: 3}
 --- !u!850595691 &137052194
 LightingSettings:
   m_ObjectHideFlags: 0
