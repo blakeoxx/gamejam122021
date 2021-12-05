@@ -23,6 +23,7 @@ public class playerController : MonoBehaviour
         if (Input.GetKey(KeyCode.W) && vSpeed < walkSpeed)
         {
             vSpeed = vSpeed + frictionModifier;
+
         } else if (Input.GetKey(KeyCode.S) && vSpeed > -walkSpeed)
         {
             vSpeed = vSpeed - frictionModifier;
@@ -53,6 +54,5 @@ public class playerController : MonoBehaviour
         
         transform.Translate(hSpeed * Time.deltaTime,0,vSpeed * Time.deltaTime);
         
-        print("rotation: " + rotation);
     }
 }
