@@ -7,9 +7,11 @@ public class playerController : MonoBehaviour
     // Start is called before the first frame update
     [SerializeField] private float walkSpeed;
     [SerializeField] private float frictionModifier;
+    [SerializeField] private float spinSpeed;
     private float hSpeed = 0;
     private float vSpeed = 0;
 
+    
     void Start()
     {
         
@@ -51,6 +53,6 @@ public class playerController : MonoBehaviour
         
         transform.Translate(hSpeed * Time.deltaTime,0,vSpeed * Time.deltaTime);
         
-        print("vSpeed: " + vSpeed);
+        print("rotation: " + rotation);
     }
 }
