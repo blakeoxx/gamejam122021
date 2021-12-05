@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,6 +20,8 @@ public class playerController : MonoBehaviour
     void Update()
     {
         GameObject body = transform.Find("Body").gameObject;
+        GameObject arm = body.transform.Find("Arm").gameObject;
+        
         if (Input.GetKey(KeyCode.W) && vSpeed < walkSpeed)
         {
             vSpeed = vSpeed + frictionModifier;
@@ -82,9 +85,19 @@ public class playerController : MonoBehaviour
             hSpeed = hSpeed + frictionModifier;
         }
         
+        if (Input.GetMouseButtonDown(0))
+        {
+            arm.transform.Rotate(-50, 0, 0);
+            
+        }
+        
+        if (Input.GetMouseButtonUp(0))
+        {
+            arm.transform.Rotate(50, 0, 0);
+        }
         
         transform.Translate(hSpeed * Time.deltaTime,0,vSpeed * Time.deltaTime);
-        print("rotation = "+ body.transform.rotation.eulerAngles.y);
+        //print("rotation = "+ body.transform.rotation.eulerAngles.y);
         
     }
 }

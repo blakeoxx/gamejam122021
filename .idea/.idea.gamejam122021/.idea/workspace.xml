@@ -15,6 +15,8 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/checkForObject.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/Scripts/pickUppable.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/Scripts/playerController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/../penisslap/Assets/Scripts/EnemyController.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -62,7 +64,7 @@
       <option name="presentableId" value="Default" />
       <updated>1638653836507</updated>
       <workItem from="1638653843982" duration="5802000" />
-      <workItem from="1638663588300" duration="3554000" />
+      <workItem from="1638663588300" duration="10162000" />
     </task>
     <servers />
   </component>
