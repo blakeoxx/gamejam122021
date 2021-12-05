@@ -21,6 +21,11 @@ public class playerController : MonoBehaviour
     {
         GameObject body = transform.Find("Body").gameObject;
         GameObject arm = body.transform.Find("Arm").gameObject;
+
+        if (Input.GetKey(KeyCode.W) && vSpeed < walkSpeed)
+        {
+            transform.Translate(0,0,walkSpeed * Time.deltaTime); 
+        }
         
         if (Input.GetKey(KeyCode.W) && vSpeed < walkSpeed)
         {

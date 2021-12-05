@@ -26,7 +26,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1307786207912794281}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.12217474, y: 0.16676855, z: 0.015024662}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -440,6 +440,7 @@ GameObject:
   - component: {fileID: 2988786099057715766}
   - component: {fileID: 6039900383788507808}
   - component: {fileID: 6037888177575022687}
+  - component: {fileID: 2811164500588401792}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -506,3 +507,19 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 2, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &2811164500588401792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8740475198475788707}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2115a3c9350e2d74d9bb62887faad511, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walkSpeed: 4
+  frictionModifier: 2
+  spinSpeed: 3
+  rb: {fileID: 0}

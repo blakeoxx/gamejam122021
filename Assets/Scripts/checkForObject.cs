@@ -9,20 +9,18 @@ public class checkForObject : MonoBehaviour
     private string otherObjectName;
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "PickUppableObject")
+        if (other.gameObject.GetComponent<pickUppable>().isPickUppable == true)
         {
             print("PICKUPPABLE");
             canPickUp = true;
 
             otherObjectName = other.gameObject.name;
         }
-        
-        
     }
     
     private void OnTriggerExit(Collider other)
     {
-        if (other.gameObject.tag == "PickUppableObject")
+        if (other.gameObject.GetComponent<pickUppable>().isPickUppable == true)
         {
             print("LEAVE");
             canPickUp = false;
@@ -39,7 +37,6 @@ public class checkForObject : MonoBehaviour
                 print("PICKED UP");
                 hasObject = true;
                 GameObject.Find(otherObjectName).transform.parent = GameObject.Find("Body").transform;
-                //other.gameObject.transform.parent = transform.Find("Body").gameObject;
             }
             else if (hasObject == true)
             {
