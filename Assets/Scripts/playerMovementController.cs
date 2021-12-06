@@ -98,13 +98,16 @@ public class playerMovementController : MonoBehaviour
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
         {
             rb.AddRelativeForce(Vector3.forward * walkSpeed);
-        } else 
+        } else if (rb.velocity.z > 0.5)
         {
             rb.AddRelativeForce(Vector3.forward * -walkSpeed);
+        } else
+        {
+            rb.AddForce(0,0,0);
         }
 
         
         //transform.Translate(0,0,speed * Time.deltaTime);
-        print("speed = " + speed);
+        print("rb.velocity.z = " + rb.velocity.z);
     }
 }
