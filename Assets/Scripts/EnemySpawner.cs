@@ -22,7 +22,7 @@ public class EnemySpawner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // Safety in case there are multiple spawners
+        // In case there are multiple spawners, only let the primary run our setup logic
         if (instance != this) return;
         
         if (enemyList.Length > 0 && transform.childCount > 0)
@@ -47,8 +47,16 @@ public class EnemySpawner : MonoBehaviour
         currentEnemyCount++;
     }
 
+    // Called by enemies when they're leaving (but not yet destroyed)
     public void OnEnemyLeaving()
     {
+        // In case there are multiple spawners, only let the primary run this
+        if (instance != this)
+        {
+            instance.OnEnemyLeaving();
+            return;
+        }
+        
         currentEnemyCount -= 1;
         if (currentEnemyCount <= 0) currentEnemyCount = 0;
     }
