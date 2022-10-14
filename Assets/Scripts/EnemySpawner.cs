@@ -12,13 +12,17 @@ public class EnemySpawner : MonoBehaviour
     [SerializeField] private float startDelay;
     [SerializeField] private float spawnDelay;
     [SerializeField] private GameObject[] enemyList;
-    
+
+    private WaveManager waveManager;
+    private bool canSpawn;
     private int waveEnemyCount;
     private int currentEnemyCount;
 
     void Awake()
     {
         instance = this;
+        waveManager = FindObjectOfType<WaveManager>();
+        canSpawn = false;
         waveEnemyCount = 0;
         currentEnemyCount = 0;
     }
@@ -35,9 +39,21 @@ public class EnemySpawner : MonoBehaviour
         }
     }
 
+    void Update()
+    {
+        // In case there are multiple spawners, only let the primary run this
+        if (instance != this) return;
+
+        if (canSpawn && waveEnemyCount >= waveSize && currentEnemyCount == 0)
+        {
+            canSpawn = false;
+            waveManager.OnWaveCleared();
+        }
+    }
+
     void Spawn()
     {
-        if (currentEnemyCount >= maxEnemyCount || waveEnemyCount >= waveSize) return;
+        if (!canSpawn || currentEnemyCount >= maxEnemyCount || waveEnemyCount >= waveSize) return;
 
         // Pick a random enemy type to spawn
         int enemyIdx = Random.Range(0, enemyList.Length);
@@ -64,5 +80,23 @@ public class EnemySpawner : MonoBehaviour
         
         currentEnemyCount--;
         if (currentEnemyCount <= 0) currentEnemyCount = 0;
+    }
+
+    public void SetWave(WaveManager.Wave wave)
+    {
+        waveSize = wave.waveSize;
+        maxEnemyCount = wave.maxEnemyCount;
+        waveEnemyCount = 0;
+        currentEnemyCount = 0;
+    }
+    
+    public void SetCanSpawn(bool newCanSpawn)
+    {
+        instance.canSpawn = newCanSpawn;
+    }
+
+    public int GetWaveEnemyCount()
+    {
+        return waveEnemyCount;
     }
 }
