@@ -427,6 +427,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31edd0b00f6ec6e4fa258649c69d9ddc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  waveSize: 20
   maxEnemyCount: 5
   startDelay: 5
   spawnDelay: 8

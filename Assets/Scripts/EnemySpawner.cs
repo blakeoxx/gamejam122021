@@ -7,16 +7,20 @@ public class EnemySpawner : MonoBehaviour
 {
     public static EnemySpawner instance;
 
+    [SerializeField] private int waveSize;
     [SerializeField] private int maxEnemyCount;
     [SerializeField] private float startDelay;
     [SerializeField] private float spawnDelay;
     [SerializeField] private GameObject[] enemyList;
     
+    private int waveEnemyCount;
     private int currentEnemyCount;
-    
+
     void Awake()
     {
         instance = this;
+        waveEnemyCount = 0;
+        currentEnemyCount = 0;
     }
     
     // Start is called before the first frame update
@@ -33,7 +37,7 @@ public class EnemySpawner : MonoBehaviour
 
     void Spawn()
     {
-        if (currentEnemyCount >= maxEnemyCount) return;
+        if (currentEnemyCount >= maxEnemyCount || waveEnemyCount >= waveSize) return;
 
         // Pick a random enemy type to spawn
         int enemyIdx = Random.Range(0, enemyList.Length);
@@ -44,6 +48,7 @@ public class EnemySpawner : MonoBehaviour
         Transform placeToSpawn = transform.GetChild(spawnerIdx);
 
         Instantiate(enemyToSpawn, placeToSpawn.position, placeToSpawn.rotation);
+        waveEnemyCount++;
         currentEnemyCount++;
     }
 
@@ -57,7 +62,7 @@ public class EnemySpawner : MonoBehaviour
             return;
         }
         
-        currentEnemyCount -= 1;
+        currentEnemyCount--;
         if (currentEnemyCount <= 0) currentEnemyCount = 0;
     }
 }
