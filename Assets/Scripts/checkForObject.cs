@@ -4,82 +4,93 @@ using UnityEngine;
 
 public class checkForObject : MonoBehaviour
 {
-    private bool canPickUp = false;
-    private bool canPutDown = false;
-    private bool hasObject = false;
-    private string otherObjectName;
-    private string putDownObjectName;
-    private Vector3 pickedUpPosition;
-    private Vector3 putDownPosition;
+    private GameObject holderObject;
+    private GameObject holdingObject;
+    private GameObject pickupTarget;
+    private GameObject putdownTarget;
+
+    void Start()
+    {
+        // Find the ancestor object with the Body name, or the top-level object
+        Transform rootLevel = transform.root;
+        Transform ancestor = transform;
+        while (ancestor.name != "Body" && ancestor != rootLevel)
+        {
+            ancestor = ancestor.parent;
+        }
+        holderObject = ancestor.gameObject;
+    }
     
     private void OnTriggerEnter(Collider other)
     {
-        if (hasObject == false)
+        if (holdingObject)
         {
-            if (other.gameObject.GetComponent<pickUppable>().isPickUppable == true)
+            putDownable otherComponent = other.gameObject.GetComponent<putDownable>();
+            if (otherComponent && otherComponent.isPutDownNode)
             {
-                print("PICKUPPABLE");
-                canPickUp = true;
-
-                otherObjectName = other.gameObject.name;
+                putdownTarget = other.gameObject;
             }
         }
         else
         {
-            if (other.gameObject.GetComponent<putDownable>().isPutDownNode == true)
+            pickUppable otherComponent = other.gameObject.GetComponent<pickUppable>();
+            if (otherComponent && otherComponent.isPickUppable)
             {
-                print("PUTDOWNABLE");
-                putDownObjectName = other.gameObject.name;
-                canPutDown = true;
+                pickupTarget = other.gameObject;
             }
         }
     }
     
     private void OnTriggerExit(Collider other)
     {
-        if (hasObject == true)
+        if (holdingObject)
         {
-            if (other.gameObject.GetComponent<putDownable>().isPutDownNode == true)
+            putDownable otherComponent = other.gameObject.GetComponent<putDownable>();
+            if (otherComponent && otherComponent.isPutDownNode)
             {
-                print("LEAVENODE");
-                canPutDown = false;
+                putdownTarget = null;
             }
         }
         else
         {
-            if (other.gameObject.GetComponent<pickUppable>().isPickUppable == true)
+            pickUppable otherComponent = other.gameObject.GetComponent<pickUppable>();
+            if (otherComponent && otherComponent.isPickUppable)
             {
-                print("LEAVE");
-                canPickUp = false;
+                pickupTarget = null;
             }
         }
     }
 
     void Update()
     {
-        pickedUpPosition = transform.position;
         if (Input.GetMouseButtonDown(0))
         {
-            if (canPickUp == true && hasObject == false)
+            if (pickupTarget && !holdingObject)
             {
-                //pick up the object
-                print("PICKED UP");
-                hasObject = true;
-                GameObject.Find(otherObjectName).transform.parent = GameObject.Find("Body").transform;
-                GameObject.Find(otherObjectName).transform.position = pickedUpPosition;
-            }
-            else if (hasObject == true)
-            {   
-                print("DROP");
-                hasObject = false;
-                GameObject.Find(otherObjectName).transform.parent = transform.root.transform;
+                // Pick up the object
+                holdingObject = pickupTarget;
+                holdingObject.transform.parent = holderObject.transform;
+                holdingObject.transform.position = transform.position;
                 
-                //Check if this is near a put down node
-                if (canPutDown == true)
+                // Mark the object as picked up, so nobody else can take it
+                holdingObject.GetComponent<pickUppable>().isPickUppable = false;
+            }
+            else if (holdingObject)
+            {
+                // Put down the object
+                holdingObject.transform.parent = transform.root.transform;
+                
+                // Check if this is near a put down node
+                if (putdownTarget)
                 {
-                    //position the object
-                    GameObject.Find(otherObjectName).transform.position = GameObject.Find(putDownObjectName).transform.position;
+                    // Position the object on the put-down node
+                    holdingObject.transform.position = putdownTarget.transform.position;
                 }
+                
+                // Mark the object as dropped, so someone else can take it
+                holdingObject.GetComponent<pickUppable>().isPickUppable = true;
+                
+                holdingObject = null;
             }
         }
     }
