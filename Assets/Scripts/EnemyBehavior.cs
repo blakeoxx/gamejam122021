@@ -1,13 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Rendering;
 using Random = UnityEngine.Random;
 
 public class EnemyBehavior : MonoBehaviour
 {
-    private static float maxInteractDistance = 1.0f;
+    private static EnemyBehavior markedForDebugging;
+    private static float maxInteractDistance = 3.0f;
     
     private NavMeshAgent navMeshAgent;
     private GameObject navTarget;
@@ -42,9 +45,36 @@ public class EnemyBehavior : MonoBehaviour
             {
                 navTarget = PickNewTarget<Sittable>();
             }
-            
-            navMeshAgent.destination = navTarget.transform.position;
+
+            // If a target was found, navigate to it. Otherwise, just stay put
+            if (navTarget != null)
+            {
+                navMeshAgent.destination = navTarget.transform.position;
+                navMeshAgent.isStopped = false;
+            }
+            else
+            {
+                navMeshAgent.isStopped = true;
+            }
         }
+    }
+
+    void OnMouseDown()
+    {
+        markedForDebugging = this;
+        Debug.Log("Enemy marked for debugging. Enable gizmos to see info");
+    }
+
+    void OnDrawGizmos()
+    {
+        if (markedForDebugging != this) return;
+        
+        Gizmos.color = Color.red;
+        Handles.color = Color.red;
+        if (navMeshAgent.destination != null && !navMeshAgent.isStopped) Gizmos.DrawLine(transform.position, navMeshAgent.destination);
+        String debugText = "Mode: " + pathingMode + "\n" +
+                           "To: " + navMeshAgent.destination + " (" + (navMeshAgent.isStopped ? "Stopped" : "Running") + ")\n";
+        Handles.Label(transform.position, debugText);
     }
 
     void DoBehaviorUpdate()
@@ -52,6 +82,7 @@ public class EnemyBehavior : MonoBehaviour
         if (pathingMode == PathingMode.Seated)
         {
             // Check for food on the table, eat it, then leave
+            if (markedForDebugging == this) Debug.Log("Seated: ate food");
             // TODO: Check for food
             // TODO: Eat it
             pathingMode = PathingMode.Leaving;
@@ -67,9 +98,16 @@ public class EnemyBehavior : MonoBehaviour
         }
         else if (pathingMode == PathingMode.StealPickUppable)
         {
-            // Check if the pick-uppable to steal is within range, then run away with it
-            if (Vector3.Distance(transform.position, navTarget.transform.position) <= maxInteractDistance)
+            if (!navTarget.GetComponent<pickUppable>().isPickUppable)
             {
+                // Tell the update loop to find a new pick-uppable, since our current target is being held
+                if (markedForDebugging == this) Debug.Log("Steal: pickup already taken");
+                navTarget = null;
+            }
+            else if (Vector3.Distance(transform.position, navTarget.transform.position) <= maxInteractDistance)
+            {
+                // The pick-uppable to steal is within range. Run away with it
+                if (markedForDebugging == this) Debug.Log("Steal: pickup grabbed");
                 // TODO: Pick up the pick-uppable
                 pathingMode = PathingMode.Stealing;
                 navTarget = null;
@@ -81,6 +119,7 @@ public class EnemyBehavior : MonoBehaviour
             if (isBonked)
             {
                 // We've been bonked. Drop the pick-uppable and go sit down
+                if (markedForDebugging == this) Debug.Log("Stealing: bonked");
                 // TODO: Drop the pick-uppable we're stealing
                 pathingMode = PathingMode.Seating;
                 navTarget = null;
@@ -88,6 +127,7 @@ public class EnemyBehavior : MonoBehaviour
             else if (Vector3.Distance(transform.position, navTarget.transform.position) <= maxInteractDistance)
             {
                 // We got away. Tell the spawner we've left
+                if (markedForDebugging == this) Debug.Log("Stealing: got away");
                 FindObjectOfType<EnemySpawner>().OnEnemyLeaving();
                 Destroy(this.gameObject);
             }
@@ -97,6 +137,7 @@ public class EnemyBehavior : MonoBehaviour
             // Check if the seat is within range, then sit
             if (Vector3.Distance(transform.position, navTarget.transform.position) <= maxInteractDistance)
             {
+                if (markedForDebugging == this) Debug.Log("Seating: sat down");
                 // TODO: Snap to the seat
                 pathingMode = PathingMode.Seated;
                 navTarget = null;
@@ -107,6 +148,7 @@ public class EnemyBehavior : MonoBehaviour
             // Check if the exit is within range, then destroy ourselves
             if (Vector3.Distance(transform.position, navTarget.transform.position) <= maxInteractDistance)
             {
+                if (markedForDebugging == this) Debug.Log("Leaving: left");
                 Destroy(this.gameObject);
             }
         }
@@ -114,10 +156,10 @@ public class EnemyBehavior : MonoBehaviour
     
     GameObject PickNewTarget<T>() where T: MonoBehaviour
     {
-        T[] foundTargets = FindObjectsOfType<T>();
-        if (foundTargets.Length > 0)
+        List<T> foundTargets = new List<T>(FindObjectsOfType<T>());
+        if (foundTargets.Count > 0)
         {
-            int objToPick = Random.Range(0, foundTargets.Length);
+            int objToPick = Random.Range(0, foundTargets.Count);
             GameObject pickedObject = foundTargets[objToPick].gameObject;
             
             if (typeof(T) == typeof(EnemySpawner))
@@ -125,6 +167,23 @@ public class EnemyBehavior : MonoBehaviour
                 // EnemySpawner has a collection of spawnpoints as children. Pick one of them to go to, instead of the spawner itself
                 objToPick = Random.Range(0, pickedObject.transform.childCount);
                 pickedObject = pickedObject.transform.GetChild(objToPick).gameObject;
+            }
+            else if (typeof(T) == typeof(pickUppable))
+            {
+                // Pick-uppables may be held by other characters. Keep picking a different one until we get one that isn't held
+                while (pickedObject && !pickedObject.GetComponent<pickUppable>().isPickUppable)
+                {
+                    foundTargets.RemoveAt(objToPick);
+                    if (foundTargets.Count <= 0)
+                    {
+                        objToPick = Random.Range(0, foundTargets.Count);
+                        pickedObject = foundTargets[objToPick].gameObject;
+                    }
+                    else
+                    {
+                        pickedObject = null;
+                    }
+                }
             }
             
             return pickedObject;
