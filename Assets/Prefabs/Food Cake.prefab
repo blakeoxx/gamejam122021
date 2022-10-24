@@ -254,6 +254,7 @@ GameObject:
   - component: {fileID: 777073103738699428}
   - component: {fileID: 8176634881329385295}
   - component: {fileID: 1124143953425067156}
+  - component: {fileID: 7160915053899950200}
   m_Layer: 0
   m_Name: Food Cake
   m_TagString: Untagged
@@ -301,6 +302,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8fd49e21f119da4b912b656ffe46c91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!65 &7160915053899950200
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4032602501264711674}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 2.7890275, z: 1}
+  m_Center: {x: 0, y: 1.337449, z: 0}
 --- !u!1 &4040571198890442206
 GameObject:
   m_ObjectHideFlags: 0
@@ -807,6 +821,6 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.5000001
-  m_Height: 2
+  m_Height: 10.493437
   m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+  m_Center: {x: 0.000000059604645, y: 3.4610143, z: -0.00000011920929}

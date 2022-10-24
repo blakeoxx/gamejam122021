@@ -16,6 +16,7 @@ public class EnemyBehavior : MonoBehaviour
     private GameObject navTarget;
     private PathingMode pathingMode;
     private bool isBonked = false;
+    private GameObject holdingObject;
     
     // Start is called before the first frame update
     void Awake()
@@ -63,6 +64,11 @@ public class EnemyBehavior : MonoBehaviour
     {
         markedForDebugging = this;
         Debug.Log("Enemy marked for debugging. Enable gizmos to see info");
+
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            isBonked = true;
+        }
     }
 
     void OnDrawGizmos()
@@ -73,7 +79,8 @@ public class EnemyBehavior : MonoBehaviour
         Handles.color = Color.red;
         if (navMeshAgent.destination != null && !navMeshAgent.isStopped) Gizmos.DrawLine(transform.position, navMeshAgent.destination);
         String debugText = "Mode: " + pathingMode + "\n" +
-                           "To: " + navMeshAgent.destination + " (" + (navMeshAgent.isStopped ? "Stopped" : "Running") + ")\n";
+                           "To: " + navMeshAgent.destination + " (" + (navMeshAgent.isStopped ? "Stopped" : "Running") + ")\n" +
+                           "Bonked: " + (isBonked ? "Yes" : "No");
         Handles.Label(transform.position, debugText);
     }
 
@@ -81,15 +88,18 @@ public class EnemyBehavior : MonoBehaviour
     {
         if (pathingMode == PathingMode.Seated)
         {
-            // Check for food on the table, eat it, then leave
+            // Check for food on the table, eat (aka destroy) it, then leave
             if (markedForDebugging == this) Debug.Log("Seated: ate food");
-            // TODO: Check for food
-            // TODO: Eat it
-            pathingMode = PathingMode.Leaving;
-            navTarget = null;
-            
-            // Tell the spawner we're leaving
-            FindObjectOfType<EnemySpawner>().OnEnemyLeaving();
+            GameObject nearestFood = FindNearestEatableFood();
+            if (nearestFood)
+            {
+                Destroy(nearestFood);
+                pathingMode = PathingMode.Leaving;
+                navTarget = null;
+                
+                // Tell the spawner we're leaving
+                FindObjectOfType<EnemySpawner>().OnEnemyLeaving();
+            }
         }
         else if (navTarget == null)
         {
@@ -106,9 +116,12 @@ public class EnemyBehavior : MonoBehaviour
             }
             else if (Vector3.Distance(transform.position, navTarget.transform.position) <= maxInteractDistance)
             {
-                // The pick-uppable to steal is within range. Run away with it
+                // The pick-uppable to steal is within range. Pick it up and run away with it
                 if (markedForDebugging == this) Debug.Log("Steal: pickup grabbed");
-                // TODO: Pick up the pick-uppable
+                navTarget.GetComponent<pickUppable>().isPickUppable = false;
+                holdingObject = navTarget;
+                holdingObject.transform.parent = transform;
+                holdingObject.transform.position = transform.position;
                 pathingMode = PathingMode.Stealing;
                 navTarget = null;
             }
@@ -120,7 +133,9 @@ public class EnemyBehavior : MonoBehaviour
             {
                 // We've been bonked. Drop the pick-uppable and go sit down
                 if (markedForDebugging == this) Debug.Log("Stealing: bonked");
-                // TODO: Drop the pick-uppable we're stealing
+                holdingObject.transform.parent = null;
+                holdingObject.GetComponent<pickUppable>().isPickUppable = true;
+                holdingObject = null;
                 pathingMode = PathingMode.Seating;
                 navTarget = null;
             }
@@ -129,16 +144,24 @@ public class EnemyBehavior : MonoBehaviour
                 // We got away. Tell the spawner we've left
                 if (markedForDebugging == this) Debug.Log("Stealing: got away");
                 FindObjectOfType<EnemySpawner>().OnEnemyLeaving();
-                Destroy(this.gameObject);
+                Destroy(gameObject);
             }
         }
         else if (pathingMode == PathingMode.Seating)
         {
-            // Check if the seat is within range, then sit
-            if (Vector3.Distance(transform.position, navTarget.transform.position) <= maxInteractDistance)
+            if (navTarget.GetComponent<Sittable>().isSeatOccupied)
             {
+                // Tell the update loop to find a new seat, since our current target is already occupied
+                if (markedForDebugging == this) Debug.Log("Seating: seat already taken");
+                navTarget = null;
+            }
+            else if (Vector3.Distance(transform.position, navTarget.transform.position) <= maxInteractDistance)
+            {
+                // The seat is within range. Snap to it
                 if (markedForDebugging == this) Debug.Log("Seating: sat down");
-                // TODO: Snap to the seat
+                navTarget.GetComponent<Sittable>().isSeatOccupied = true;
+                transform.position = navTarget.transform.position;
+                transform.rotation = navTarget.transform.rotation;
                 pathingMode = PathingMode.Seated;
                 navTarget = null;
             }
@@ -149,7 +172,7 @@ public class EnemyBehavior : MonoBehaviour
             if (Vector3.Distance(transform.position, navTarget.transform.position) <= maxInteractDistance)
             {
                 if (markedForDebugging == this) Debug.Log("Leaving: left");
-                Destroy(this.gameObject);
+                Destroy(gameObject);
             }
         }
     }
@@ -189,6 +212,30 @@ public class EnemyBehavior : MonoBehaviour
             return pickedObject;
         }
         return null;
+    }
+
+    GameObject FindNearestEatableFood()
+    {
+        Collider[] collisions = Physics.OverlapSphere(transform.position, maxInteractDistance);
+        
+        GameObject nearestObj = null;
+        float nearestObjDistance = maxInteractDistance;
+        foreach (Collider c in collisions)
+        {
+            if (!c.GetComponent<EdibleFood>()) continue;
+            
+            pickUppable objPickup = c.GetComponent<pickUppable>();
+            bool isPutDown = objPickup && objPickup.isPickUppable;
+            float distance = Vector3.Distance(transform.position, c.transform.position);
+
+            if (isPutDown && distance <= nearestObjDistance)
+            {
+                nearestObj = c.gameObject;
+                nearestObjDistance = distance;
+            }
+        }
+
+        return nearestObj;
     }
 }
 
