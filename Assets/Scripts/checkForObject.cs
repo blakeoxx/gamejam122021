@@ -78,7 +78,7 @@ public class checkForObject : MonoBehaviour
             else if (holdingObject)
             {
                 // Put down the object
-                holdingObject.transform.parent = transform.root.transform;
+                holdingObject.transform.parent = null;
                 
                 // Check if this is near a put down node
                 if (putdownTarget)
