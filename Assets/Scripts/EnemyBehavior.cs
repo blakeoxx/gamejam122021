@@ -203,7 +203,7 @@ public class EnemyBehavior : MonoBehaviour
                 while (pickedObject && !pickedObject.GetComponent<pickUppable>().isPickUppable)
                 {
                     foundTargets.RemoveAt(objToPick);
-                    if (foundTargets.Count <= 0)
+                    if (foundTargets.Count > 0)
                     {
                         objToPick = Random.Range(0, foundTargets.Count);
                         pickedObject = foundTargets[objToPick].gameObject;
@@ -220,7 +220,7 @@ public class EnemyBehavior : MonoBehaviour
                 while (pickedObject && pickedObject.GetComponent<Sittable>().isSeatOccupied)
                 {
                     foundTargets.RemoveAt(objToPick);
-                    if (foundTargets.Count <= 0)
+                    if (foundTargets.Count > 0)
                     {
                         objToPick = Random.Range(0, foundTargets.Count);
                         pickedObject = foundTargets[objToPick].gameObject;
