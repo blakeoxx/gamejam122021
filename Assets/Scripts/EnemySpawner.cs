@@ -7,36 +7,24 @@ public class EnemySpawner : MonoBehaviour
 {
     public static EnemySpawner instance;
 
-    [SerializeField] private int waveSize;
-    [SerializeField] private int maxEnemyCount;
-    [SerializeField] private float startDelay;
-    [SerializeField] private float spawnDelay;
     [SerializeField] private GameObject[] enemyList;
+    
+    private int waveSize;
+    private int maxEnemyCount;
+    private float spawnDelay;
 
     private WaveManager waveManager;
     private bool canSpawn;
-    private int waveEnemyCount;
-    private int currentEnemyCount;
+    private int waveSpawnedCount;
+    private int activeEnemyCount;
 
     void Awake()
     {
         instance = this;
         waveManager = FindObjectOfType<WaveManager>();
         canSpawn = false;
-        waveEnemyCount = 0;
-        currentEnemyCount = 0;
-    }
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        // In case there are multiple spawners, only let the primary run our setup logic
-        if (instance != this) return;
-        
-        if (enemyList.Length > 0 && transform.childCount > 0)
-        {
-            InvokeRepeating(nameof(Spawn), startDelay, spawnDelay);
-        }
+        waveSpawnedCount = 0;
+        activeEnemyCount = 0;
     }
 
     void Update()
@@ -44,28 +32,34 @@ public class EnemySpawner : MonoBehaviour
         // In case there are multiple spawners, only let the primary run this
         if (instance != this) return;
 
-        if (canSpawn && waveEnemyCount >= waveSize && currentEnemyCount == 0)
+        if (canSpawn && waveSpawnedCount >= waveSize && activeEnemyCount == 0)
         {
             canSpawn = false;
             waveManager.OnWaveCleared();
         }
     }
 
-    void Spawn()
+    IEnumerator Spawn()
     {
-        if (!canSpawn || currentEnemyCount >= maxEnemyCount || waveEnemyCount >= waveSize) return;
-
-        // Pick a random enemy type to spawn
-        int enemyIdx = Random.Range(0, enemyList.Length);
-        GameObject enemyToSpawn = enemyList[enemyIdx];
+        while (canSpawn && waveSpawnedCount < waveSize)
+        {
+            if (activeEnemyCount < maxEnemyCount)
+            {
+                // Pick a random enemy type to spawn
+                int enemyIdx = Random.Range(0, enemyList.Length);
+                GameObject enemyToSpawn = enemyList[enemyIdx];
         
-        // Pick a random spawn position
-        int spawnerIdx = Random.Range(0, transform.childCount);
-        Transform placeToSpawn = transform.GetChild(spawnerIdx);
+                // Pick a random spawn position
+                int spawnerIdx = Random.Range(0, transform.childCount);
+                Transform placeToSpawn = transform.GetChild(spawnerIdx);
 
-        Instantiate(enemyToSpawn, placeToSpawn.position, placeToSpawn.rotation);
-        waveEnemyCount++;
-        currentEnemyCount++;
+                Instantiate(enemyToSpawn, placeToSpawn.position, placeToSpawn.rotation);
+                waveSpawnedCount++;
+                activeEnemyCount++;
+            }
+            
+            yield return new WaitForSecondsRealtime(spawnDelay);
+        }
     }
 
     // Called by enemies when they're leaving (but not yet destroyed)
@@ -78,25 +72,34 @@ public class EnemySpawner : MonoBehaviour
             return;
         }
         
-        currentEnemyCount--;
-        if (currentEnemyCount <= 0) currentEnemyCount = 0;
+        activeEnemyCount--;
+        if (activeEnemyCount <= 0) activeEnemyCount = 0;
     }
 
     public void SetWave(WaveManager.Wave wave)
     {
         waveSize = wave.waveSize;
         maxEnemyCount = wave.maxEnemyCount;
-        waveEnemyCount = 0;
-        currentEnemyCount = 0;
+        spawnDelay = wave.spawnDelay;
+        waveSpawnedCount = 0;
+        activeEnemyCount = 0;
     }
     
     public void SetCanSpawn(bool newCanSpawn)
     {
-        instance.canSpawn = newCanSpawn;
+        if (instance != this)
+        {
+            instance.SetCanSpawn(newCanSpawn);
+            return;
+        }
+        
+        bool oldCanSpawn = canSpawn;
+        canSpawn = newCanSpawn;
+        if (newCanSpawn && !oldCanSpawn) StartCoroutine(Spawn());
     }
 
     public int GetWaveEnemyCount()
     {
-        return waveEnemyCount;
+        return waveSpawnedCount;
     }
 }

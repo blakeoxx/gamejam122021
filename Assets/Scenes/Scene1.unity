@@ -1693,8 +1693,11 @@ MonoBehaviour:
   waves:
   - waveSize: 20
     maxEnemyCount: 5
+    spawnDelay: 5
   - waveSize: 40
     maxEnemyCount: 7
+    spawnDelay: 5
+  startDelay: 3
 --- !u!1 &795377407
 GameObject:
   m_ObjectHideFlags: 0
