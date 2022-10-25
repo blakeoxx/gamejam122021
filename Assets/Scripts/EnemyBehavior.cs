@@ -214,6 +214,23 @@ public class EnemyBehavior : MonoBehaviour
                     }
                 }
             }
+            else if (typeof(T) == typeof(Sittable))
+            {
+                // Seats may be taken by other characters. Keep picking a different one until we get one that's free
+                while (pickedObject && pickedObject.GetComponent<Sittable>().isSeatOccupied)
+                {
+                    foundTargets.RemoveAt(objToPick);
+                    if (foundTargets.Count <= 0)
+                    {
+                        objToPick = Random.Range(0, foundTargets.Count);
+                        pickedObject = foundTargets[objToPick].gameObject;
+                    }
+                    else
+                    {
+                        pickedObject = null;
+                    }
+                }
+            }
             
             return pickedObject;
         }
