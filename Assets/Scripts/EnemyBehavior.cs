@@ -89,10 +89,10 @@ public class EnemyBehavior : MonoBehaviour
         if (pathingMode == PathingMode.Seated)
         {
             // Check for food on the table, eat (aka destroy) it, then leave
-            if (markedForDebugging == this) Debug.Log("Seated: ate food");
             GameObject nearestFood = FindNearestEatableFood();
             if (nearestFood)
             {
+                if (markedForDebugging == this) Debug.Log("Seated: ate food");
                 Destroy(nearestFood);
                 pathingMode = PathingMode.Leaving;
                 navTarget = null;
@@ -108,7 +108,14 @@ public class EnemyBehavior : MonoBehaviour
         }
         else if (pathingMode == PathingMode.StealPickUppable)
         {
-            if (!navTarget.GetComponent<pickUppable>().isPickUppable)
+            if (isBonked)
+            {
+                // We've been bonked. Go sit down
+                if (markedForDebugging == this) Debug.Log("Steal: bonked");
+                pathingMode = PathingMode.Seating;
+                navTarget = null;
+            }
+            else if (!navTarget.GetComponent<pickUppable>().isPickUppable)
             {
                 // Tell the update loop to find a new pick-uppable, since our current target is being held
                 if (markedForDebugging == this) Debug.Log("Steal: pickup already taken");
@@ -128,7 +135,6 @@ public class EnemyBehavior : MonoBehaviour
         }
         else if (pathingMode == PathingMode.Stealing)
         {
-            // Check if we've been bonked or successfully got away
             if (isBonked)
             {
                 // We've been bonked. Drop the pick-uppable and go sit down
@@ -197,7 +203,24 @@ public class EnemyBehavior : MonoBehaviour
                 while (pickedObject && !pickedObject.GetComponent<pickUppable>().isPickUppable)
                 {
                     foundTargets.RemoveAt(objToPick);
-                    if (foundTargets.Count <= 0)
+                    if (foundTargets.Count > 0)
+                    {
+                        objToPick = Random.Range(0, foundTargets.Count);
+                        pickedObject = foundTargets[objToPick].gameObject;
+                    }
+                    else
+                    {
+                        pickedObject = null;
+                    }
+                }
+            }
+            else if (typeof(T) == typeof(Sittable))
+            {
+                // Seats may be taken by other characters. Keep picking a different one until we get one that's free
+                while (pickedObject && pickedObject.GetComponent<Sittable>().isSeatOccupied)
+                {
+                    foundTargets.RemoveAt(objToPick);
+                    if (foundTargets.Count > 0)
                     {
                         objToPick = Random.Range(0, foundTargets.Count);
                         pickedObject = foundTargets[objToPick].gameObject;

@@ -8,7 +8,9 @@ public class WaveManager : MonoBehaviour
 {
     [SerializeField] private Text waveTextOverlay;
     [SerializeField] private Wave[] waves;
+    [SerializeField] private float startDelay;
     private int currentWave;
+    private float waveStartTimeLeft;
     private bool waveInProgress;
     
     // Start is called before the first frame update
@@ -26,8 +28,13 @@ public class WaveManager : MonoBehaviour
         {
             if (currentWave < waves.Length)
             {
-                waveTextOverlay.text = "Wave " + (currentWave + 1) + "/" + waves.Length + "\n" +
-                                       "Press <b>[R]</b> to start";
+                waveTextOverlay.text = "Wave " + (currentWave + 1) + "/" + waves.Length + "\n";
+                if (waveStartTimeLeft > 0)
+                {
+                    string countdown = Math.Round(waveStartTimeLeft, 2).ToString("F1");
+                    waveTextOverlay.text += "Starting in " + countdown + " seconds";
+                }
+                else waveTextOverlay.text += "Press <b>[R]</b> to start";
             }
             else
             {
@@ -45,19 +52,12 @@ public class WaveManager : MonoBehaviour
         // Start the wave if the start key is pressed
         if (Input.GetKeyDown(KeyCode.R) && !waveInProgress)
         {
-            if (currentWave < waves.Length)
-            {
-                EnemySpawner.instance.SetWave(waves[currentWave]);
-                EnemySpawner.instance.SetCanSpawn(true);
-                waveInProgress = true;
-            }
-            else
+            if (currentWave >= waves.Length)
             {
                 currentWave = 0;
-                EnemySpawner.instance.SetWave(waves[currentWave]);
-                EnemySpawner.instance.SetCanSpawn(true);
-                waveInProgress = true;
             }
+            EnemySpawner.instance.SetWave(waves[currentWave]);
+            StartCoroutine(StartWave(startDelay, 0.1f));
         }
     }
 
@@ -66,11 +66,25 @@ public class WaveManager : MonoBehaviour
         waveInProgress = false;
         currentWave++;
     }
+
+    IEnumerator StartWave(float delay, float delta)
+    {
+        waveStartTimeLeft = delay + delta;
+        while (waveStartTimeLeft > 0)
+        {
+            waveStartTimeLeft -= delta;
+            yield return new WaitForSecondsRealtime(delta);
+        }
+        waveStartTimeLeft = 0;
+        EnemySpawner.instance.SetCanSpawn(true);
+        waveInProgress = true;
+    }
     
     [Serializable]
     public class Wave
     {
         public int waveSize;
         public int maxEnemyCount;
+        public float spawnDelay;
     }
 }
