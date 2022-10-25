@@ -108,7 +108,14 @@ public class EnemyBehavior : MonoBehaviour
         }
         else if (pathingMode == PathingMode.StealPickUppable)
         {
-            if (!navTarget.GetComponent<pickUppable>().isPickUppable)
+            if (isBonked)
+            {
+                // We've been bonked. Go sit down
+                if (markedForDebugging == this) Debug.Log("Steal: bonked");
+                pathingMode = PathingMode.Seating;
+                navTarget = null;
+            }
+            else if (!navTarget.GetComponent<pickUppable>().isPickUppable)
             {
                 // Tell the update loop to find a new pick-uppable, since our current target is being held
                 if (markedForDebugging == this) Debug.Log("Steal: pickup already taken");
@@ -128,7 +135,6 @@ public class EnemyBehavior : MonoBehaviour
         }
         else if (pathingMode == PathingMode.Stealing)
         {
-            // Check if we've been bonked or successfully got away
             if (isBonked)
             {
                 // We've been bonked. Drop the pick-uppable and go sit down
