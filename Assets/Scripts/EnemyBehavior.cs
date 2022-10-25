@@ -89,10 +89,10 @@ public class EnemyBehavior : MonoBehaviour
         if (pathingMode == PathingMode.Seated)
         {
             // Check for food on the table, eat (aka destroy) it, then leave
-            if (markedForDebugging == this) Debug.Log("Seated: ate food");
             GameObject nearestFood = FindNearestEatableFood();
             if (nearestFood)
             {
+                if (markedForDebugging == this) Debug.Log("Seated: ate food");
                 Destroy(nearestFood);
                 pathingMode = PathingMode.Leaving;
                 navTarget = null;
