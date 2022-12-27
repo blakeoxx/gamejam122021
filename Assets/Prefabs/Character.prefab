@@ -555,9 +555,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a7597a48ad9c25242a503ec5991238af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controller: {fileID: 1964072088}
   maxSpeed: 20
   turnSmoothTime: 0.04
   turnSmoothing: 0.1
   targetAngle: 0
   frictionModifier: 0
+  gravity: 9
