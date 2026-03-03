@@ -2,7 +2,7 @@
 
 A collaborative game project worked on by Blake, Max (the good one), sambo, and sisbo/mini-slam.
 
-We used Unity 2020.3.22f1 for the game, and Jetbrains Rider for the scripting.
+We built the game using Unity (created with 2020.3.22f1, updated to 6000.3.10f1), and Jetbrains Rider for the C# scripting.
 
 # The Concept
 
