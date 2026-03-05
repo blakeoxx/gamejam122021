@@ -98,7 +98,7 @@ public class EnemyBehavior : MonoBehaviour
                 navTarget = null;
                 
                 // Tell the spawner we're leaving
-                FindObjectOfType<EnemySpawner>().OnEnemyLeaving();
+                FindAnyObjectByType<EnemySpawner>().OnEnemyLeaving();
             }
         }
         else if (navTarget == null)
@@ -149,7 +149,7 @@ public class EnemyBehavior : MonoBehaviour
             {
                 // We got away. Tell the spawner we've left
                 if (markedForDebugging == this) Debug.Log("Stealing: got away");
-                FindObjectOfType<EnemySpawner>().OnEnemyLeaving();
+                FindAnyObjectByType<EnemySpawner>().OnEnemyLeaving();
                 Destroy(gameObject);
             }
         }
@@ -185,7 +185,7 @@ public class EnemyBehavior : MonoBehaviour
     
     GameObject PickNewTarget<T>() where T: MonoBehaviour
     {
-        List<T> foundTargets = new List<T>(FindObjectsOfType<T>());
+        List<T> foundTargets = new List<T>(FindObjectsByType<T>(FindObjectsSortMode.None));
         if (foundTargets.Count > 0)
         {
             int objToPick = Random.Range(0, foundTargets.Count);

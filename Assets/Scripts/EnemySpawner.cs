@@ -21,7 +21,7 @@ public class EnemySpawner : MonoBehaviour
     void Awake()
     {
         instance = this;
-        waveManager = FindObjectOfType<WaveManager>();
+        waveManager = FindAnyObjectByType<WaveManager>();
         canSpawn = false;
         waveSpawnedCount = 0;
         activeEnemyCount = 0;
