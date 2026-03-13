@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class Sittable : MonoBehaviour
 {
-    [HideInInspector] public bool isSeatOccupied = false;
+    [HideInInspector] public bool isSeatOccupied;
 }

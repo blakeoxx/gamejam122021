@@ -4,11 +4,10 @@ using UnityEngine;
 
 public class characterMovementController : MonoBehaviour
 {
-    public float maxSpeed = 6f;
     public float turnSmoothTime = 0.01f;
     public float turnSmoothing;
-    public float targetAngle = 0;
-    private float speed = 20f;
+    public float targetAngle;
+    private const float Speed = 20f;
     [SerializeField] private float frictionModifier;
     [SerializeField] private float gravity;
 
@@ -36,7 +35,7 @@ public class characterMovementController : MonoBehaviour
         if (direction.magnitude > 0.1f)
         {
             targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
-            vel += direction * speed;
+            vel += direction * Speed;
         }
         
         // Apply gravity

@@ -32,7 +32,7 @@ public class EnemyBehavior : MonoBehaviour
         
         // Path towards an appropriate object depending on the current pathing mode
         // No pathing is necessary if we're sitting down
-        if (navTarget == null && pathingMode != PathingMode.Seated)
+        if (navTarget is null && pathingMode != PathingMode.Seated)
         {
             if (pathingMode == PathingMode.StealPickUppable)
             {
@@ -48,7 +48,7 @@ public class EnemyBehavior : MonoBehaviour
             }
 
             // If a target was found, navigate to it. Otherwise, just stay put
-            if (navTarget != null)
+            if (navTarget is not null)
             {
                 navMeshAgent.destination = navTarget.transform.position;
                 navMeshAgent.isStopped = false;
@@ -77,7 +77,7 @@ public class EnemyBehavior : MonoBehaviour
         
         Gizmos.color = Color.red;
         Handles.color = Color.red;
-        if (navMeshAgent.destination != null && !navMeshAgent.isStopped) Gizmos.DrawLine(transform.position, navMeshAgent.destination);
+        if (navMeshAgent.hasPath && !navMeshAgent.isStopped) Gizmos.DrawLine(transform.position, navMeshAgent.destination);
         String debugText = "Mode: " + pathingMode + "\n" +
                            "To: " + navMeshAgent.destination + " (" + (navMeshAgent.isStopped ? "Stopped" : "Running") + ")\n" +
                            "Bonked: " + (isBonked ? "Yes" : "No");
@@ -101,7 +101,7 @@ public class EnemyBehavior : MonoBehaviour
                 FindAnyObjectByType<EnemySpawner>().OnEnemyLeaving();
             }
         }
-        else if (navTarget == null)
+        else if (navTarget is null)
         {
             // No nav target is set. Bail out since every other behavior check requires one
             return;

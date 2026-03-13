@@ -7,7 +7,7 @@ public class playerMovementController : MonoBehaviour
     [SerializeField] private float walkSpeed;
     [SerializeField] private float frictionModifier;
     [SerializeField] private float spinSpeed;
-    private float speed = 0;
+    private float speed;
     public Rigidbody rb;
     
     // Start is called before the first frame update
@@ -24,7 +24,7 @@ public class playerMovementController : MonoBehaviour
         
         if (Input.GetKey(KeyCode.W))
         {
-            if (transform.rotation.eulerAngles.y > 0 && transform.rotation.eulerAngles.y < 180)
+            if (transform.rotation.eulerAngles.y is > 0 and < 180)
             {
                 transform.Rotate(0,-spinSpeed,0);
             } else if (transform.rotation.eulerAngles.y < 360)
@@ -52,10 +52,10 @@ public class playerMovementController : MonoBehaviour
             }
         } else if (Input.GetKey(KeyCode.D))
         {
-            if (transform.rotation.eulerAngles.y > 90 && transform.rotation.eulerAngles.y < 270)
+            if (transform.rotation.eulerAngles.y is > 90 and < 270)
             {
                 transform.Rotate(0,-spinSpeed,0);
-            } else if (transform.rotation.eulerAngles.y < 90 || transform.rotation.eulerAngles.y > 270)
+            } else if (transform.rotation.eulerAngles.y is < 90 or > 270)
             {
                 transform.Rotate(0,spinSpeed,0);
             }
@@ -66,10 +66,10 @@ public class playerMovementController : MonoBehaviour
             }
         } else if (Input.GetKey(KeyCode.A))
         {
-            if (transform.rotation.eulerAngles.y > 270 || transform.rotation.eulerAngles.y < 90 )
+            if (transform.rotation.eulerAngles.y is > 270 or < 90 )
             {
                 transform.Rotate(0,-spinSpeed,0);
-            } else if (transform.rotation.eulerAngles.y < 270 && transform.rotation.eulerAngles.y > 90)
+            } else if (transform.rotation.eulerAngles.y is < 270 and > 90)
             {
                 transform.Rotate(0,spinSpeed,0);
             }
@@ -87,7 +87,6 @@ public class playerMovementController : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             arm.transform.Rotate(-50, 0, 0);
-            
         }
         
         if (Input.GetMouseButtonUp(0))
@@ -105,9 +104,5 @@ public class playerMovementController : MonoBehaviour
         {
             rb.AddForce(0,0,0);
         }
-
-        
-        //transform.Translate(0,0,speed * Time.deltaTime);
-        print("rb.velocity.z = " + rb.linearVelocity.z);
     }
 }

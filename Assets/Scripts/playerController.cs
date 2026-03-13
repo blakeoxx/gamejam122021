@@ -9,8 +9,9 @@ public class playerController : MonoBehaviour
     [SerializeField] private float walkSpeed;
     [SerializeField] private float frictionModifier;
     [SerializeField] private float spinSpeed;
-    private float hSpeed = 0;
-    private float vSpeed = 0;
+    private float hSpeed;
+    private float vSpeed;
+    
     void Start()
     {
         
@@ -29,19 +30,18 @@ public class playerController : MonoBehaviour
         
         if (Input.GetKey(KeyCode.W) && vSpeed < walkSpeed)
         {
-            vSpeed = vSpeed + frictionModifier;
+            vSpeed += frictionModifier;
             
-            if (body.transform.rotation.eulerAngles.y > 0 && body.transform.rotation.eulerAngles.y < 180)
+            if (body.transform.rotation.eulerAngles.y is > 0 and < 180)
             {
                 body.transform.Rotate(0,-spinSpeed,0);
             } else if (body.transform.rotation.eulerAngles.y < 360)
             {
                 body.transform.Rotate(0,spinSpeed,0);
             }
-            
         } else if (Input.GetKey(KeyCode.S) && vSpeed > -walkSpeed)
         {
-            vSpeed = vSpeed - frictionModifier;
+            vSpeed -= frictionModifier;
             if (body.transform.rotation.eulerAngles.y > 180)
             {
                 body.transform.Rotate(0,-spinSpeed,0);
@@ -49,45 +49,43 @@ public class playerController : MonoBehaviour
             {
                 body.transform.Rotate(0,spinSpeed,0);
             }
-        }
-        else if (vSpeed > 0)
+        } else if (vSpeed > 0)
         {
-            vSpeed = vSpeed - frictionModifier;
+            vSpeed -= frictionModifier;
         } else if (vSpeed < 0)
         {
-            vSpeed = vSpeed + frictionModifier;
+            vSpeed += frictionModifier;
         }
         
         if (Input.GetKey(KeyCode.D) && hSpeed < walkSpeed)
         {
-            hSpeed = hSpeed + frictionModifier;
+            hSpeed += frictionModifier;
             
-            if (body.transform.rotation.eulerAngles.y > 90 && body.transform.rotation.eulerAngles.y < 270)
+            if (body.transform.rotation.eulerAngles.y is > 90 and < 270)
             {
                 body.transform.Rotate(0,-spinSpeed,0);
-            } else if (body.transform.rotation.eulerAngles.y < 90 || body.transform.rotation.eulerAngles.y > 270)
+            } else if (body.transform.rotation.eulerAngles.y is < 90 or > 270)
             {
                 body.transform.Rotate(0,spinSpeed,0);
             }
             
         } else if (Input.GetKey(KeyCode.A) && hSpeed > -walkSpeed)
         {
-            hSpeed = hSpeed - frictionModifier;
+            hSpeed -= frictionModifier;
             
-            if (body.transform.rotation.eulerAngles.y > 270 || body.transform.rotation.eulerAngles.y < 90 )
+            if (body.transform.rotation.eulerAngles.y is > 270 or < 90 )
             {
                 body.transform.Rotate(0,-spinSpeed,0);
-            } else if (body.transform.rotation.eulerAngles.y < 270 && body.transform.rotation.eulerAngles.y > 90)
+            } else if (body.transform.rotation.eulerAngles.y is < 270 and > 90)
             {
                 body.transform.Rotate(0,spinSpeed,0);
             }
-        }
-        else if (hSpeed > 0)
+        } else if (hSpeed > 0)
         {
-            hSpeed = hSpeed - frictionModifier;
+            hSpeed -= frictionModifier;
         } else if (hSpeed < 0)
         {
-            hSpeed = hSpeed + frictionModifier;
+            hSpeed += frictionModifier;
         }
         
         if (Input.GetMouseButtonDown(0))
@@ -103,6 +101,5 @@ public class playerController : MonoBehaviour
         
         transform.Translate(hSpeed * Time.deltaTime,0,vSpeed * Time.deltaTime);
         //print("rotation = "+ body.transform.rotation.eulerAngles.y);
-        
     }
 }
