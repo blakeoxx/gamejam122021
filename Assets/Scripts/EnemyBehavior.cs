@@ -36,7 +36,7 @@ public class EnemyBehavior : MonoBehaviour
         {
             if (pathingMode == PathingMode.StealPickUppable)
             {
-                navTarget = PickNewTarget<pickUppable>();
+                navTarget = PickNewTarget<PickUppable>();
             }
             else if (pathingMode == PathingMode.Stealing || pathingMode == PathingMode.Leaving)
             {
@@ -115,7 +115,7 @@ public class EnemyBehavior : MonoBehaviour
                 pathingMode = PathingMode.Seating;
                 navTarget = null;
             }
-            else if (!navTarget.GetComponent<pickUppable>().isPickUppable)
+            else if (!navTarget.GetComponent<PickUppable>().isPickUppable)
             {
                 // Tell the update loop to find a new pick-uppable, since our current target is being held
                 if (markedForDebugging == this) Debug.Log("Steal: pickup already taken");
@@ -125,7 +125,7 @@ public class EnemyBehavior : MonoBehaviour
             {
                 // The pick-uppable to steal is within range. Pick it up and run away with it
                 if (markedForDebugging == this) Debug.Log("Steal: pickup grabbed");
-                navTarget.GetComponent<pickUppable>().isPickUppable = false;
+                navTarget.GetComponent<PickUppable>().isPickUppable = false;
                 holdingObject = navTarget;
                 holdingObject.transform.parent = transform;
                 holdingObject.transform.position = transform.position;
@@ -140,7 +140,7 @@ public class EnemyBehavior : MonoBehaviour
                 // We've been bonked. Drop the pick-uppable and go sit down
                 if (markedForDebugging == this) Debug.Log("Stealing: bonked");
                 holdingObject.transform.parent = null;
-                holdingObject.GetComponent<pickUppable>().isPickUppable = true;
+                holdingObject.GetComponent<PickUppable>().isPickUppable = true;
                 holdingObject = null;
                 pathingMode = PathingMode.Seating;
                 navTarget = null;
@@ -197,10 +197,10 @@ public class EnemyBehavior : MonoBehaviour
                 objToPick = Random.Range(0, pickedObject.transform.childCount);
                 pickedObject = pickedObject.transform.GetChild(objToPick).gameObject;
             }
-            else if (typeof(T) == typeof(pickUppable))
+            else if (typeof(T) == typeof(PickUppable))
             {
                 // Pick-uppables may be held by other characters. Keep picking a different one until we get one that isn't held
-                while (pickedObject && !pickedObject.GetComponent<pickUppable>().isPickUppable)
+                while (pickedObject && !pickedObject.GetComponent<PickUppable>().isPickUppable)
                 {
                     foundTargets.RemoveAt(objToPick);
                     if (foundTargets.Count > 0)
@@ -247,7 +247,7 @@ public class EnemyBehavior : MonoBehaviour
         {
             if (!c.GetComponent<EdibleFood>()) continue;
             
-            pickUppable objPickup = c.GetComponent<pickUppable>();
+            PickUppable objPickup = c.GetComponent<PickUppable>();
             bool isPutDown = objPickup && objPickup.isPickUppable;
             float distance = Vector3.Distance(transform.position, c.transform.position);
 

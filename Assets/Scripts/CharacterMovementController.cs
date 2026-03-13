@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class characterMovementController : MonoBehaviour
+public class CharacterMovementController : MonoBehaviour
 {
     public float turnSmoothTime = 0.01f;
     public float turnSmoothing;
